@@ -200,7 +200,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
 
   const sortedTasks = useMemo(() => {
     if (!pingHistory?.tasks) return [];
-    return [...pingHistory.tasks].sort((a, b) => a.id - b.id);
+    return [...pingHistory.tasks].sort((a, b) => a.weight - b.weight);
   }, [pingHistory?.tasks]);
 
   const breakPoints = useMemo(() => {

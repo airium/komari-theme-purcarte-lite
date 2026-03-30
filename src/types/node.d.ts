@@ -103,6 +103,7 @@ export interface PingTask {
   interval: number;
   name: string;
   loss: number;
+  weight: number;
 }
 
 export interface PingHistoryResponse {
