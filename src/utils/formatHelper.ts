@@ -68,11 +68,51 @@ export const formatIsoMonthDayTime = (
   return timePart === fallback ? fallback : `${datePart} ${timePart}`;
 };
 
+export const formatSignificantDigits = (
+  value: number,
+  significantDigits = 3,
+  fallback = "N/A"
+) => {
+  if (!Number.isFinite(value)) return fallback;
+
+  const digits = Math.max(1, Math.floor(significantDigits));
+  const rounded = Number(value.toPrecision(digits));
+  const absRounded = Math.abs(rounded);
+  const digitsBeforeDecimal =
+    absRounded === 0 ? 1 : Math.floor(Math.log10(absRounded)) + 1;
+  const decimalsNeeded = Math.max(0, digits - digitsBeforeDecimal);
+  const decimals = Math.min(2, decimalsNeeded);
+
+  return rounded.toFixed(decimals);
+};
+
+export const formatPercentage = (
+  value: number,
+  significantDigits = 3,
+  fallback = "N/A"
+) => {
+  const formatted = formatSignificantDigits(value, significantDigits, fallback);
+  return formatted === fallback ? fallback : `${formatted}%`;
+};
+
+export const formatLoadValue = (
+  value: number,
+  significantDigits = 3,
+  fallback = "N/A"
+) => {
+  if (!Number.isFinite(value)) return fallback;
+
+  return formatSignificantDigits(value, significantDigits, fallback);
+};
+
 // Helper function to format bytes
-export const formatBytes = (bytes: number, isSpeed = false, decimals = 2) => {
+export const formatBytes = (
+  bytes: number,
+  isSpeed = false,
+  significantDigits = 3
+) => {
   if (bytes === 0) return isSpeed ? "0 B/s" : "0 B";
   const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
   const sizes = isSpeed
     ? ["B/s", "KB/s", "MB/s", "GB/s", "TB/s"]
     : ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
@@ -86,7 +126,7 @@ export const formatBytes = (bytes: number, isSpeed = false, decimals = 2) => {
     value = bytes / Math.pow(k, i);
   }
 
-  return parseFloat(value.toFixed(dm)) + " " + sizes[i];
+  return `${formatSignificantDigits(value, significantDigits)} ${sizes[i]}`;
 };
 
 // Helper function to format uptime

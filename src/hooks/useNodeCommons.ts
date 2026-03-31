@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { formatPrice } from "@/utils";
 import { formatIsoDate } from "@/utils";
+import { formatLoadValue } from "@/utils";
 import type { NodeData } from "@/types/node";
 import type { RpcNodeStatus } from "@/types/rpc";
 import { useNodeData } from "@/contexts/NodeDataContext";
@@ -165,9 +166,9 @@ export const useNodeCommons = (node: NodeData & { stats?: any }) => {
 
   const load =
     stats && isOnline
-      ? `${stats.load.toFixed(2)} | ${stats.load5.toFixed(
-          2
-        )} | ${stats.load15.toFixed(2)}`
+      ? `${formatLoadValue(stats.load)} | ${formatLoadValue(
+          stats.load5
+        )} | ${formatLoadValue(stats.load15)}`
       : t("node.notAvailable");
 
   const daysLeft =

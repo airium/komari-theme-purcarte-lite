@@ -1,4 +1,10 @@
-import { cn, formatBytes, formatTrafficLimit, formatUptime } from "@/utils";
+import {
+  cn,
+  formatBytes,
+  formatPercentage,
+  formatTrafficLimit,
+  formatUptime,
+} from "@/utils";
 import type { NodeData } from "@/types/node";
 import { Link } from "react-router-dom";
 import {
@@ -150,14 +156,12 @@ const NodeTableRow = ({
                 <ProgressBar value={cpuUsage} h="h-2" />
                 <span className="w-10 text-right text-xs">
                   {isOnline
-                    ? `${cpuUsage.toFixed(0)}%`
+                    ? formatPercentage(cpuUsage)
                     : t("node.notAvailable")}
                 </span>
               </div>
             ) : (
-              <div>
-                {isOnline ? `${cpuUsage.toFixed(0)}%` : t("node.notAvailable")}
-              </div>
+              <div>{isOnline ? formatPercentage(cpuUsage) : t("node.notAvailable")}</div>
             )}
           </div>
         </div>
@@ -170,14 +174,12 @@ const NodeTableRow = ({
                 <ProgressBar value={memUsage} h="h-2" />
                 <span className="w-10 text-right text-xs">
                   {isOnline
-                    ? `${memUsage.toFixed(0)}%`
+                    ? formatPercentage(memUsage)
                     : t("node.notAvailable")}
                 </span>
               </div>
             ) : (
-              <div>
-                {isOnline ? `${memUsage.toFixed(0)}%` : t("node.notAvailable")}
-              </div>
+              <div>{isOnline ? formatPercentage(memUsage) : t("node.notAvailable")}</div>
             )}
           </div>
         </div>
@@ -192,14 +194,14 @@ const NodeTableRow = ({
                     <ProgressBar value={swapUsage} h="h-2" />
                     <span className="w-10 text-right text-xs">
                       {isOnline
-                        ? `${swapUsage.toFixed(0)}%`
+                        ? formatPercentage(swapUsage)
                         : t("node.notAvailable")}
                     </span>
                   </div>
                 ) : (
                   <div>
                     {isOnline
-                      ? `${swapUsage.toFixed(0)}%`
+                      ? formatPercentage(swapUsage)
                       : t("node.notAvailable")}
                   </div>
                 )}
@@ -220,13 +222,13 @@ const NodeTableRow = ({
                 <ProgressBar value={diskUsage} h="h-2" />
                 <span className="w-10 text-right text-xs">
                   {isOnline
-                    ? `${diskUsage.toFixed(0)}%`
+                    ? formatPercentage(diskUsage)
                     : t("node.notAvailable")}
                 </span>
               </div>
             ) : (
               <div>
-                {isOnline ? `${diskUsage.toFixed(0)}%` : t("node.notAvailable")}
+                {isOnline ? formatPercentage(diskUsage) : t("node.notAvailable")}
               </div>
             )}
           </div>
@@ -264,7 +266,7 @@ const NodeTableRow = ({
                     <ProgressBar value={trafficPercentage} h="h-2" />
                     <span className="text-right text-xs">
                       {node.traffic_limit !== 0
-                        ? `${trafficPercentage.toFixed(0)}%`
+                        ? formatPercentage(trafficPercentage)
                         : ""}
                     </span>
                   </div>

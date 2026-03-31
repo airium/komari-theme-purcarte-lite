@@ -4,6 +4,7 @@ import { memo, useMemo, type ReactNode } from "react";
 import {
   formatBytes,
   formatIsoDateTime,
+  formatLoadValue,
   formatUptime,
   formatTrafficLimit,
 } from "@/utils";
@@ -139,9 +140,9 @@ const Instance = memo(({ node }: InstanceProps) => {
           label={t("instancePage.load")}
           value={
             stats && isOnline
-              ? `${stats.load.toFixed(2)} | ${stats.load5.toFixed(
-                  2
-                )} | ${stats.load15.toFixed(2)}`
+              ? `${formatLoadValue(stats.load)} | ${formatLoadValue(
+                  stats.load5
+                )} | ${formatLoadValue(stats.load15)}`
               : t("node.notAvailable")
           }
         />

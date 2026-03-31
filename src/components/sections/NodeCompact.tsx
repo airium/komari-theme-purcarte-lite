@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatBytes, formatUptime, getOSImage } from "@/utils";
+import { formatBytes, formatPercentage, formatUptime, getOSImage } from "@/utils";
 import type { NodeData } from "@/types/node";
 import { Link } from "react-router-dom";
 import {
@@ -87,15 +87,15 @@ export const NodeCompact = ({ node, onShowDetails }: NodeCompactProps) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <CpuIcon className="size-4 text-blue-600" />
-            <span>{cpuUsage.toFixed(0)}%</span>
+            <span>{formatPercentage(cpuUsage)}</span>
           </div>
           <div className="flex items-center gap-1">
             <MemoryStickIcon className="size-4 text-green-600" />
-            <span>{memUsage.toFixed(0)}%</span>
+            <span>{formatPercentage(memUsage)}</span>
           </div>
           <div className="flex items-center gap-1">
             <HardDriveIcon className="size-4 text-red-600" />
-            <span>{diskUsage.toFixed(0)}%</span>
+            <span>{formatPercentage(diskUsage)}</span>
           </div>
           <div className="flex items-center gap-1">
             <ZapIcon className="size-4 text-yellow-600" />

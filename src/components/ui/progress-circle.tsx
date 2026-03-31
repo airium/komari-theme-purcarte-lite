@@ -1,4 +1,5 @@
 import React from "react";
+import { formatPercentage } from "@/utils";
 
 interface CircleProgressProps {
   value: number;
@@ -58,7 +59,7 @@ export const CircleProgress: React.FC<CircleProgressProps> = ({
       </svg>
       {showPercentage && (
         <div className="absolute inset-0 flex items-center justify-center text-xs font-medium">
-          {percentage.toFixed(0)}%
+          {formatPercentage(percentage)}
         </div>
       )}
     </div>

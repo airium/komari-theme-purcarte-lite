@@ -12,7 +12,7 @@ import {
 import { ChartContainer } from "@/components/ui/chart";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import type { NodeData } from "@/types/node";
-import { formatBytes } from "@/utils";
+import { formatBytes, formatPercentage } from "@/utils";
 import { Flex } from "@radix-ui/themes";
 import Loading from "@/components/loading";
 import { useLoadCharts } from "@/hooks/useLoadCharts";
@@ -48,16 +48,14 @@ const LoadCharts = memo(
         id: "cpu",
         title: t("chart.cpu"),
         type: "area",
-        value: liveData?.cpu
-          ? `${liveData.cpu.toFixed(2)}%`
-          : t("node.notAvailable"),
+        value: liveData ? formatPercentage(liveData.cpu) : t("node.notAvailable"),
         dataKey: "cpu",
         yAxisDomain: [0, 100],
         yAxisFormatter: (value: number, index: number) =>
           index !== 0 ? `${value}%` : "",
         color: colors[0],
         data: chartData,
-        tooltipFormatter: (value: number) => `${value.toFixed(2)}%`,
+        tooltipFormatter: (value: number) => formatPercentage(value),
         tooltipLabel: t("chart.cpuUsageTooltip"),
       },
       {
@@ -90,7 +88,7 @@ const LoadCharts = memo(
             color: colors[0],
             tooltipLabel: t("chart.memoryUsageTooltip"),
             tooltipFormatter: (value: number, raw: any) =>
-              `${formatBytes(raw?.ram_raw || 0)} (${value.toFixed(0)}%)`,
+              `${formatBytes(raw?.ram_raw || 0)} (${formatPercentage(value)})`,
           },
           {
             dataKey: "swap",
@@ -99,7 +97,9 @@ const LoadCharts = memo(
             tooltipFormatter: (value: number, raw: any) =>
               node.swap_total === 0
                 ? t("node.off")
-                : `${formatBytes(raw?.swap_raw || 0)} (${value.toFixed(0)}%)`,
+                : `${formatBytes(raw?.swap_raw || 0)} (${formatPercentage(
+                    value
+                  )})`,
           },
         ],
         yAxisDomain: [0, 100],
