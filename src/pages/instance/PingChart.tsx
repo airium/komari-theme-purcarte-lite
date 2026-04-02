@@ -1,6 +1,5 @@
 import { memo, useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/useMobile";
 import { Eye, EyeOff, ArrowRightToLine, RefreshCw } from "lucide-react";
 import {
   LineChart,
@@ -32,11 +31,53 @@ import { useLocale } from "@/config/hooks";
 
 interface PingChartProps {
   node: NodeData;
-  hours: number;
+  initialHours?: number;
 }
 
-const PingChart = memo(({ node, hours }: PingChartProps) => {
-  const { enableConnectBreaks, pingChartMaxPoints } = useAppConfig();
+const PingChart = memo(({ node, initialHours = 1 }: PingChartProps) => {
+  const { enableConnectBreaks, pingChartMaxPoints, publicSettings } =
+    useAppConfig();
+  const { t } = useLocale();
+  const maxPingRecordPreserveTime =
+    publicSettings?.ping_record_preserve_time || 24;
+
+  const timeRanges = useMemo(() => {
+    return [
+      { label: t("instancePage.live"), hours: 0 },
+      { label: t("instancePage.hours", { count: 1 }), hours: 1 },
+      { label: t("instancePage.hours", { count: 4 }), hours: 4 },
+      { label: t("instancePage.days", { count: 1 }), hours: 24 },
+      { label: t("instancePage.days", { count: 7 }), hours: 168 },
+      { label: t("instancePage.days", { count: 30 }), hours: 720 },
+    ];
+  }, [t]);
+
+  const pingTimeRanges = useMemo(() => {
+    const filtered = timeRanges.filter(
+      (range) => range.hours !== 0 && range.hours <= maxPingRecordPreserveTime
+    );
+
+    if (maxPingRecordPreserveTime > 720) {
+      const dynamicLabel =
+        maxPingRecordPreserveTime % 24 === 0
+          ? t("instancePage.days", {
+              count: Math.floor(maxPingRecordPreserveTime / 24),
+            })
+          : t("instancePage.hours", { count: maxPingRecordPreserveTime });
+      filtered.push({
+        label: dynamicLabel,
+        hours: maxPingRecordPreserveTime,
+      });
+    }
+
+    if (filtered.length === 0) {
+      filtered.push({ label: t("instancePage.hours", { count: 1 }), hours: 1 });
+    }
+
+    return filtered;
+  }, [maxPingRecordPreserveTime, t, timeRanges]);
+
+  const [hours, setHours] = useState(initialHours);
   const { loading, error, pingHistory } = usePingChart(node, hours);
   const [visiblePingTasks, setVisiblePingTasks] = useState<number[]>([]);
   const [timeRange, setTimeRange] = useState<[number, number] | null>(null);
@@ -47,8 +88,22 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
   const [cutPeak, setCutPeak] = useState(false);
   const [connectBreaks, setConnectBreaks] = useState(enableConnectBreaks);
   const [isResetting, setIsResetting] = useState(false);
-  const isMobile = useIsMobile();
-  const { t } = useLocale();
+
+  useEffect(() => {
+    if (pingTimeRanges.length === 0) {
+      return;
+    }
+
+    const hasRange = pingTimeRanges.some((range) => range.hours === hours);
+    if (!hasRange) {
+      setHours(pingTimeRanges[0].hours);
+    }
+  }, [hours, pingTimeRanges]);
+
+  useEffect(() => {
+    setTimeRange(null);
+    setBrushIndices({});
+  }, [hours]);
 
   useEffect(() => {
     if (pingHistory?.tasks) {
@@ -141,7 +196,6 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
 
     const keys = tasks.map((t) => String(t.id));
 
-    // 暂存-1导致的null值
     const preservedNulls = new Set<string>();
     full.forEach((d, i) => {
       keys.forEach((key) => {
@@ -157,7 +211,6 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       maxCapMs: 30 * 60_000,
     });
 
-    // 恢复-1导致的null值
     full.forEach((d, i) => {
       keys.forEach((key) => {
         if (preservedNulls.has(`${i}-${key}`)) {
@@ -313,9 +366,9 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
       )}
 
       <Card className="flex-grow flex flex-col">
-        <CardHeader>
-          <div className="flex justify-between items-center flex-wrap">
-            <div className="flex gap-4 flex-wrap">
+        <CardHeader className="pb-2">
+          <div className="flex flex-col gap-2 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:items-center">
+            <div className="flex gap-4 flex-wrap items-center">
               <div className="flex items-center space-x-2">
                 <Switch
                   id="peak-shaving"
@@ -349,7 +402,21 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
                 </Tips>
               </div>
             </div>
-            <div className={`flex gap-2 ${isMobile ? "w-full mt-2" : ""}`}>
+
+            <div className="flex justify-center gap-1 overflow-x-auto whitespace-nowrap">
+              {pingTimeRanges.map((range) => (
+                <Button
+                  key={`${range.label}-${range.hours}`}
+                  variant={hours === range.hours ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 px-2 text-[11px]"
+                  onClick={() => setHours(range.hours)}>
+                  {range.label}
+                </Button>
+              ))}
+            </div>
+
+            <div className="flex gap-2 xl:justify-end">
               <Button variant="default" onClick={handleToggleAll} size="sm">
                 {pingHistory?.tasks &&
                 visiblePingTasks.length === pingHistory.tasks.length ? (
@@ -399,6 +466,7 @@ const PingChart = memo(({ node, hours }: PingChartProps) => {
             </div>
           </div>
         </CardHeader>
+
         <CardContent className="pt-0 flex-grow flex flex-col">
           {pingHistory?.tasks && pingHistory.tasks.length > 0 ? (
             <ResponsiveContainer

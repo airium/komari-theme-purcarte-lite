@@ -383,7 +383,7 @@ const NodeTableRow = ({ node, enableListItemProgressBar }: NodeTableRowProps) =>
           {enablePingChart && (
             <div className={enableInstanceDetail ? "col-span-2" : "col-span-3"}>
               {shouldRenderChart && (
-                <PingChart node={node} hours={pingChartTimeInPreview} />
+                <PingChart node={node} initialHours={pingChartTimeInPreview} />
               )}
             </div>
           )}

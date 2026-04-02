@@ -11,94 +11,29 @@ const PingChart = lazy(() => import("./PingChart"));
 import Loading from "@/components/loading";
 import Flag from "@/components/sections/Flag";
 import { useAppConfig } from "@/config";
-import { useIsMobile } from "@/hooks/useMobile";
 import { useLocale } from "@/config/hooks";
 import { Card } from "@/components/ui/card";
+import { getOSImage } from "@/utils";
 
 const InstancePage = () => {
   const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
   const { nodes: staticNodes, loading: nodesLoading } = useNodeData();
   const { liveData } = useLiveData();
-  useNodeData();
   const [staticNode, setStaticNode] = useState<NodeData | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [chartType, setChartType] = useState<"load" | "ping">("load");
-  const [displayedChartType, setDisplayedChartType] = useState<"load" | "ping">(
-    "load"
-  );
-  const [chartAnimationState, setChartAnimationState] = useState<
-    "idle" | "fading-out" | "fading-in"
-  >("fading-in");
-  const [loadHours, setLoadHours] = useState<number>(0);
-  const [pingHours, setPingHours] = useState<number>(1); // 默认1小时
-  const { enableInstanceDetail, enablePingChart, publicSettings } =
-    useAppConfig();
-  const isMobile = useIsMobile();
+  const { enableInstanceDetail, enablePingChart } = useAppConfig();
   const { t } = useLocale();
 
-  const maxRecordPreserveTime = publicSettings?.record_preserve_time || 0; // 默认0表示关闭
-  const maxPingRecordPreserveTime =
-    publicSettings?.ping_record_preserve_time || 24; // 默认1天
-
-  const timeRanges = useMemo(() => {
-    return [
-      { label: t("instancePage.live"), hours: 0 },
-      { label: t("instancePage.hours", { count: 1 }), hours: 1 },
-      { label: t("instancePage.hours", { count: 4 }), hours: 4 },
-      { label: t("instancePage.days", { count: 1 }), hours: 24 },
-      { label: t("instancePage.days", { count: 7 }), hours: 168 },
-      { label: t("instancePage.days", { count: 30 }), hours: 720 },
-    ];
-  }, [t]);
-
-  const pingTimeRanges = useMemo(() => {
-    const filtered = timeRanges.filter(
-      (range) => range.hours !== 0 && range.hours <= maxPingRecordPreserveTime
-    );
-
-    if (maxPingRecordPreserveTime > 720) {
-      const dynamicLabel =
-        maxPingRecordPreserveTime % 24 === 0
-          ? t("instancePage.days", {
-              count: Math.floor(maxPingRecordPreserveTime / 24),
-            })
-          : t("instancePage.hours", { count: maxPingRecordPreserveTime });
-      filtered.push({
-        label: dynamicLabel,
-        hours: maxPingRecordPreserveTime,
-      });
-    }
-
-    return filtered;
-  }, [timeRanges, maxPingRecordPreserveTime, t]);
-
-  const loadTimeRanges = useMemo(() => {
-    const filtered = timeRanges.filter(
-      (range) => range.hours <= maxRecordPreserveTime
-    );
-    if (maxRecordPreserveTime > 720) {
-      const dynamicLabel =
-        maxRecordPreserveTime % 24 === 0
-          ? t("instancePage.days", {
-              count: Math.floor(maxRecordPreserveTime / 24),
-            })
-          : t("instancePage.hours", { count: maxRecordPreserveTime });
-      filtered.push({
-        label: dynamicLabel,
-        hours: maxRecordPreserveTime,
-      });
-    }
-
-    return filtered;
-  }, [timeRanges, maxRecordPreserveTime, t]);
+  const allNodes = useMemo(
+    () => (Array.isArray(staticNodes) ? staticNodes : []),
+    [staticNodes]
+  );
 
   useEffect(() => {
-    if (Array.isArray(staticNodes)) {
-      const foundNode = staticNodes.find((n: NodeData) => n.uuid === uuid);
-      setStaticNode(foundNode || null);
-    }
-  }, [staticNodes, uuid]);
+    const foundNode = allNodes.find((n: NodeData) => n.uuid === uuid);
+    setStaticNode(foundNode || null);
+  }, [allNodes, uuid]);
 
   useEffect(() => {
     setIsReady(false);
@@ -126,32 +61,6 @@ const InstancePage = () => {
 
     return () => clearTimeout(timer);
   }, [node, nodesLoading]);
-
-  useEffect(() => {
-    if (chartType === displayedChartType) {
-      if (chartAnimationState === "fading-in") {
-        const timer = setTimeout(() => setChartAnimationState("idle"), 300);
-        return () => clearTimeout(timer);
-      }
-      return;
-    }
-
-    setChartAnimationState("fading-out");
-
-    const outTimer = setTimeout(() => {
-      setDisplayedChartType(chartType);
-      setChartAnimationState("fading-in");
-    }, 200);
-
-    return () => clearTimeout(outTimer);
-  }, [chartType, displayedChartType, chartAnimationState]);
-
-  const handleChartTypeChange = (nextType: "load" | "ping") => {
-    if (nextType === chartType || chartAnimationState === "fading-out") {
-      return;
-    }
-    setChartType(nextType);
-  };
 
   if (!node || !staticNode) {
     if (nodesLoading) {
@@ -181,101 +90,106 @@ const InstancePage = () => {
 
   return (
     <div className="text-card-foreground space-y-4 my-4 fade-in @container">
-      <Card className="flex items-center justify-between p-4 mb-4 text-primary">
-        <div className="flex items-center gap-2 min-w-0">
-          <Button
-            className="flex-shrink-0"
-            variant="outline"
-            size="icon"
-            onClick={() => navigate(-1)}>
-            <ArrowLeft />
-          </Button>
-          <div className="flex items-center gap-2 min-w-0">
-            <Flag flag={node.region}></Flag>
-            <span className="text-xl md:text-2xl font-bold">{node.name}</span>
+      <Card className="p-3 md:p-4 text-primary">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-start gap-3">
+            <Button
+              className="flex-shrink-0"
+              variant="outline"
+              size="icon"
+              onClick={() => navigate(-1)}>
+              <ArrowLeft />
+            </Button>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap gap-2">
+                {allNodes.map((item) => {
+                  const tileOnline = liveData?.[item.uuid]?.online ?? false;
+                  const isCurrent = item.uuid === node.uuid;
+
+                  return (
+                    <Button
+                      key={item.uuid}
+                      type="button"
+                      variant={isCurrent ? "default" : "outline"}
+                      size="sm"
+                      className={`h-auto px-3 py-2 justify-start max-w-full ${
+                        isCurrent ? "ring-2 ring-(--accent-8)" : ""
+                      }`}
+                      onClick={() => navigate(`/instance/${item.uuid}`)}>
+                      <span className="flex items-center gap-1.5 min-w-0">
+                        <Flag flag={item.region} size="4" />
+                        <img
+                          src={getOSImage(item.os)}
+                          alt={item.os}
+                          className="size-4 object-contain"
+                          loading="lazy"
+                        />
+                        <span className="max-w-[12rem] truncate">{item.name}</span>
+                        <span
+                          className={`text-xs font-semibold ${
+                            tileOnline ? "text-green-500" : "text-red-500"
+                          }`}>
+                          {tileOnline ? t("node.online") : t("node.offline")}
+                        </span>
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-          <span className="text-sm text-secondary-foreground flex-shrink-0">
-            {isOnline ? t("node.online") : t("node.offline")}
+          <span className="flex items-center gap-2 min-w-0 text-sm text-secondary-foreground">
+            <Flag flag={node.region} size="4" />
+            <img
+              src={getOSImage(node.os)}
+              alt={node.os}
+              className="size-4 object-contain"
+              loading="lazy"
+            />
+            <span className="truncate font-semibold text-primary">{node.name}</span>
+            <span
+              className={`font-semibold ${
+                isOnline ? "text-green-500" : "text-red-500"
+              }`}>
+              {isOnline ? t("node.online") : t("node.offline")}
+            </span>
           </span>
         </div>
       </Card>
 
-      {enableInstanceDetail && node && <Instance node={node} />}
-
-      <div className="flex flex-col items-center w-full space-y-4">
-        <Card className="p-2">
-          <div className="flex justify-center space-x-2">
-            <Button
-              variant={chartType === "load" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => handleChartTypeChange("load")}>
-              {t("instancePage.optionLoad")}
-            </Button>
-            {enablePingChart && (
-              <Button
-                variant={chartType === "ping" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => handleChartTypeChange("ping")}>
-                {t("instancePage.optionPing")}
-              </Button>
-            )}
+      <div className={`grid gap-4 ${enableInstanceDetail ? "xl:grid-cols-3" : ""}`}>
+        {enableInstanceDetail && node && (
+          <div className="xl:col-span-1 @container">
+            <Instance node={node} />
           </div>
-        </Card>
-        <Card className={`justify-center p-2 ${isMobile ? "w-full" : ""}`}>
-          {chartType === "load" ? (
-            <div className="flex space-x-2 overflow-x-auto whitespace-nowrap">
-              {loadTimeRanges.map((range) => (
-                <Button
-                  key={range.label}
-                  variant={loadHours === range.hours ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setLoadHours(range.hours)}>
-                  {range.label}
-                </Button>
-              ))}
-            </div>
-          ) : (
-            <div className="flex space-x-2 overflow-x-auto whitespace-nowrap">
-              {pingTimeRanges.map((range) => (
-                <Button
-                  key={range.label}
-                  variant={pingHours === range.hours ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setPingHours(range.hours)}>
-                  {range.label}
-                </Button>
-              ))}
-            </div>
-          )}
-        </Card>
+        )}
+        <div className={enableInstanceDetail ? "xl:col-span-2" : ""}>
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-96">
+                <Loading text={t("chart.loading")} />
+              </div>
+            }>
+            <LoadCharts
+              node={node}
+              initialHours={0}
+              liveData={stats}
+              isOnline={isOnline}
+            />
+          </Suspense>
+        </div>
       </div>
 
-      <div
-        className={
-          chartAnimationState === "fading-out"
-            ? "fade-out"
-            : chartAnimationState === "fading-in"
-            ? "fade-in"
-            : undefined
-        }>
+      {enablePingChart ? (
         <Suspense
           fallback={
             <div className="flex items-center justify-center h-96">
               <Loading text={t("chart.loading")} />
             </div>
           }>
-          {displayedChartType === "load" && staticNode ? (
-            <LoadCharts
-              node={staticNode}
-              hours={loadHours}
-              liveData={stats}
-              isOnline={isOnline}
-            />
-          ) : displayedChartType === "ping" && staticNode ? (
-            <PingChart node={staticNode} hours={pingHours} />
-          ) : null}
+          <PingChart node={node} initialHours={1} />
         </Suspense>
-      </div>
+      ) : null}
     </div>
   );
 };
