@@ -1,4 +1,12 @@
-import { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "react";
+import {
+  StrictMode,
+  useEffect,
+  useRef,
+  useState,
+  lazy,
+  Suspense,
+  type CSSProperties,
+} from "react";
 import { createRoot } from "react-dom/client";
 import {
   BrowserRouter as Router,
@@ -6,8 +14,8 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import "./index.css";
 import "@radix-ui/themes/styles.css";
+import "./index.css";
 import { Theme } from "@radix-ui/themes";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Header } from "@/components/sections/Header";
@@ -259,12 +267,23 @@ export const AppContent = () => {
     }
   }, [isSettingsOpen, isMobile, mainWidth]);
 
+  const themeStyle: CSSProperties = {
+    backgroundColor: "transparent",
+    "--default-font-family": "var(--purcarte-font-sans)",
+    "--heading-font-family": "var(--purcarte-font-sans)",
+    "--strong-font-family": "var(--purcarte-font-sans)",
+    "--em-font-family": "var(--purcarte-font-sans)",
+    "--quote-font-family": "var(--purcarte-font-sans)",
+    "--default-mono-font-family": "var(--purcarte-font-mono)",
+    "--code-font-family": "var(--purcarte-font-mono)",
+  } as CSSProperties;
+
   return (
     <Theme
       appearance={appearance}
       accentColor={color}
       scaling="110%"
-      style={{ backgroundColor: "transparent" }}>
+      style={themeStyle}>
       <Toaster />
       <DynamicContent>
         <div

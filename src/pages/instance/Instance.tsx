@@ -283,7 +283,7 @@ const Instance = memo(({ node }: InstanceProps) => {
           value={
             stats && isOnline ? (
               <span style={{ color: getUptimeHoursColor(stats.uptime / 3600) }}>
-                {t("instancePage.hours", { count: formatUptime(stats.uptime) })}
+                {t("instancePage.uptimeHours", { count: formatUptime(stats.uptime) })}
               </span>
             ) : (
               t("node.notAvailable")

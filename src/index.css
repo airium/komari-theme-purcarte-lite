@@ -82,6 +82,9 @@
   --setting-width: 24rem;
   --purcarte-blur: 10px;
   --body-background-url: url("");
+
+  --purcarte-font-sans: "Ubuntu", "Fira Sans", "NotoEmoji", system-ui, sans-serif;
+  --purcarte-font-mono: "Monaspace Neon", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 .dark {
@@ -125,6 +128,8 @@
   }
   body {
     @apply bg-background;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
   button {
     cursor: pointer;
@@ -133,6 +138,11 @@
 
 @layer utilities {
   .radix-themes {
+    --default-font-family: var(--purcarte-font-sans);
+    --heading-font-family: var(--purcarte-font-sans);
+    --code-font-family: var(--purcarte-font-mono);
+    --strong-font-family: var(--purcarte-font-sans);
+    --em-font-family: var(--purcarte-font-sans);
     --purcarte-card-color: var(--card-light);
     --theme-text-muted-color: var(--secondary-foreground);
     --theme-line-muted-color: rgb(from var(--secondary-foreground) r g b / 0.8);

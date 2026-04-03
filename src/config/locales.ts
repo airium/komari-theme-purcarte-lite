@@ -9,30 +9,30 @@ export const defaultTexts = {
     cpu: "CPU",
     mem: "RAM", // 内存
     swap: "SWAP",
-    disk: "Storage", // 硬盘
-    traffic: "Traffic Quota", // 流量
-    network: "Network", // 网络
-    load: "Load", // 负载
-    uptime: "Runtime", // 运行时数
+    disk: "STOR", // 硬盘
+    traffic: "Traffic", // 流量
+    network: "NET", // 网络
+    load: "LOAD", // 负载
+    uptime: "Uptime", // 运行时数
     expiredAt: "Expiry", // 到期:
     offline: "Offline", // 离线
     online: "Online", // 在线
     off: "OFF",
-    unlimited: "Unlimited", // 无限制
+    unlimited: "∞", // 无限制
     notAvailable: "N/A",
-    notEnabled: "Not enabled", // 未启用
+    notEnabled: "Not Enabled", // 未启用
     expired: "Expired", // 已过期
     daysLeft: "{daysLeft} days left", // 余 {daysLeft} 天
-    longTerm: "Long term", // 长期
+    longTerm: "Long Term", // 长期
     notSet: "Not set", // 未设置
     tags: "Tags", // 标签
     speed: "Speed", // 网速
     quota: "Quota", // 配额
-    trafficTypeSum: "Total", // 总和
-    trafficTypeMax: "Maximum", // 最大值
-    trafficTypeMin: "Minimum", // 最小值
-    trafficTypeUp: "Upload", // 上传
-    trafficTypeDown: "Download", // 下载
+    trafficTypeSum: "SUM", // 总和
+    trafficTypeMax: "MAX", // 最大值
+    trafficTypeMin: "MIN", // 最小值
+    trafficTypeUp: "UP", // 上传
+    trafficTypeDown: "DL", // 下载
     free: "FREE", // 免费
     billingCycleDays: "{days} days", // {days}天
     billingCycleMonth: "mo", // 月
@@ -131,11 +131,11 @@ export const defaultTexts = {
     os: "Operating System", // 操作系统
     mem: "RAM", // 内存
     swap: "SWAP", // 交换内存
-    disk: "Storage", // 磁盘
-    load: "Load", // 负载
+    disk: "STOR", // 磁盘
+    load: "LOAD", // 负载
     realtimeNetwork: "Realtime Network", // 实时网络
     totalTraffic: "Traffic Statistics", // 总流量
-    runtime: "Runtime", // 运行时数
+    runtime: "Uptime", // 运行时数
     lastUpdated: "Last Reported", // 最后上报
     loadingNodeInfo: "Loading node information...", // 正在获取节点信息...
     nodeNotFound: "Node not found", // 未找到该节点
@@ -143,6 +143,7 @@ export const defaultTexts = {
     latency: "Latency", // 延迟
     live: "Live", // 实时
     hours: "{count}h", // {count}小时
+    uptimeHours: "{count} hrs", // 运行时小时单位
     days: "{count}d", // {count}天
     optionLoad: "Load", // 负载
     optionPing: "Latency", // 延迟
@@ -163,8 +164,8 @@ export const defaultTexts = {
     cpu: "CPU",
     memory: "RAM", // 内存
     swap: "SWAP", // 交换
-    disk: "Storage", // 磁盘
-    network: "Network", // 网络
+    disk: "STOR", // 磁盘
+    network: "NET", // 网络
     tcpPrefix: "TCP:",
     udpPrefix: "UDP:",
     connections: "Connections", // 连接数
@@ -172,7 +173,7 @@ export const defaultTexts = {
     cpuUsageTooltip: "CPU usage", // CPU 使用率
     memoryUsageTooltip: "RAM", // 内存
     swapUsageTooltip: "SWAP", // 交换
-    diskUsageTooltip: "Storage", // 磁盘
+    diskUsageTooltip: "STOR", // 磁盘
     download: "Download", // 下载
     upload: "Upload", // 上传
     tcpConnections: "TCP connections", // TCP 连接

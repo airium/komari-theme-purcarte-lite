@@ -39,16 +39,16 @@ interface NodeTableProps {
 
 const TABLE_COLUMN_TEMPLATE = [
   "2rem",
-  "minmax(8rem, 0.5fr)",
-  "minmax(6rem, 3fr)",
-  "minmax(6rem, 0fr)",
-  "minmax(6rem, 0fr)",
-  "minmax(12rem, 1fr)",
-  "minmax(12rem, 1fr)",
-  "minmax(12rem, 1fr)",
-  "minmax(6rem, 0fr)",
-  "minmax(6rem, 0fr)",
-  "minmax(12rem, 1fr)",
+  "minmax(7rem, 1fr)",
+  "minmax(0rem, 12fr)",
+  "minmax(5rem, 1fr)",
+  "minmax(4rem, 1fr)",
+  "minmax(11rem, 2fr)",
+  "minmax(9rem, 2fr)",
+  "minmax(9rem, 2fr)",
+  "minmax(5rem, 1fr)",
+  "minmax(4rem, 1fr)",
+  "minmax(11rem, 1fr)",
 ].join(" ");
 
 const TWO_LINE_CELL_CLASS = "min-w-0 h-9 grid grid-rows-2 items-center";
@@ -61,16 +61,16 @@ export const NodeTable = ({
 
   return (
     <ScrollArea className="w-full" showHorizontalScrollbar>
-      <div className="min-w-[1600px] px-1 pb-1">
+      <div className="min-w-[1000px] px-1 pb-1">
         <div className="space-y-0.5">
           <Card
             className="theme-card-style text-primary font-semibold grid gap-x-2 gap-y-1 p-1.5 items-center text-xs"
             style={{ gridTemplateColumns: TABLE_COLUMN_TEMPLATE }}>
             <div className="text-center">#</div>
             <div className="text-left">{t("node.name")}</div>
-            <div className="text-left">{t("node.tags")}</div>
-            <div className="text-left">{t("node.expiredAt")}</div>
-            <div className="text-left">{t("node.uptime")}</div>
+            <div className="text-left truncate">{t("node.tags")}</div>
+            <div className="text-right">{t("node.expiredAt")}</div>
+            <div className="text-right">{t("node.uptime")}</div>
             <div className="text-left flex items-center gap-1">
               <CpuIcon className="size-4 text-blue-600" />
               <span>{t("node.cpu")}</span>
@@ -85,7 +85,7 @@ export const NodeTable = ({
             </div>
             <div className="text-center">{t("node.speed")}</div>
             <div className="text-center">{t("node.traffic")}</div>
-            <div className="text-left">{t("node.quota")}</div>
+            <div className="text-center">{t("node.quota")}</div>
           </Card>
           {nodes.map((node) => (
             <NodeTableRow
@@ -289,7 +289,7 @@ const NodeTableRow = ({ node, enableListItemProgressBar }: NodeTableRowProps) =>
           {customTags.length > 0 ? (
             <div className="max-h-8 overflow-hidden">
               <Tag
-                className="!gap-0.5 origin-top-left scale-95 [&_.rt-Badge]:!text-[11px] [&_[data-accent-color]]:!text-[11px]"
+                className="!gap-0.5 origin-top-left scale-90 [&_.rt-Badge]:!text-[10px] [&_[data-accent-color]]:!text-[10px]"
                 tags={customTags}
               />
             </div>
@@ -298,7 +298,7 @@ const NodeTableRow = ({ node, enableListItemProgressBar }: NodeTableRowProps) =>
           )}
         </div>
 
-        <div className={cn(TWO_LINE_CELL_CLASS, "text-left leading-tight")}>
+        <div className={cn(TWO_LINE_CELL_CLASS, "text-right leading-tight")}>
           <div className="truncate">{expired_at}</div>
           <div className="truncate text-secondary-foreground">
             {remainingInfo.text ? (
@@ -309,11 +309,11 @@ const NodeTableRow = ({ node, enableListItemProgressBar }: NodeTableRowProps) =>
           </div>
         </div>
 
-        <div className={cn(TWO_LINE_CELL_CLASS, "text-center leading-tight")}>
+        <div className={cn(TWO_LINE_CELL_CLASS, "text-right leading-tight")}>
           <div className="truncate">
             {isOnline && stats ? (
               <span style={{ color: getUptimeHoursColor(stats.uptime / 3600) }}>
-                {t("instancePage.hours", { count: formatUptime(stats.uptime) })}
+                {t("instancePage.uptimeHours", { count: formatUptime(stats.uptime) })}
               </span>
             ) : (
               t("node.notAvailable")

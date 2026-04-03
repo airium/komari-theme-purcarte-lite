@@ -294,11 +294,11 @@ interface TrafficLimitLabels {
 }
 
 const DEFAULT_TRAFFIC_TYPE_LABELS: Required<TrafficTypeLabels> = {
-  sum: "Total",
-  max: "Maximum",
-  min: "Minimum",
-  up: "Upload",
-  down: "Download",
+  sum: "SUM",
+  max: "MAX",
+  min: "MIN",
+  up: "UP",
+  down: "DL",
 };
 
 export const getTrafficLimitTypeLabel = (
